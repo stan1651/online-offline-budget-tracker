@@ -28,10 +28,10 @@ request.onerror = function(event) {
 function saveRecord(record) {
   console.log("Save record invoked");
   // Create a transaction on the BudgetStore db with readwrite access
-  const transaction = db.transaction(["BudgetStore"], "readwrite");
+  const transaction = db.transaction(["pending"], "readwrite");
 
   // Access your BudgetStore object store
-  const store = transaction.objectStore("BudgetStore");
+  const store = transaction.objectStore("pending");
 
   // Add record to your store with add method.
   store.add(record);
@@ -42,9 +42,9 @@ function saveRecord(record) {
 function checkDatabase() {
   console.log("check db invoked");
 
-  const transaction = db.transaction(["BudgetStore"], "readonly");
+  const transaction = db.transaction(["pending"], "readwrite");
 
-  const store = transaction.objectStore("BudgetStore");
+  const store = transaction.objectStore("pending");
 
   // Get all records from store and set to a variable
   const getAll = store.getAll();
@@ -53,6 +53,7 @@ function checkDatabase() {
   getAll.onsuccess = async function () {
     if (getAll.result.length === 0) {
       // no items to post to backend
+      // can get rid of the return and put everything below here inside the if conditional
       return;
     }
     // If there are items in the store, we need to bulk add them when we are back online
@@ -68,10 +69,10 @@ function checkDatabase() {
     // If our returned response is not empty
     if (dbTransactions.length > 0) {
       // Open another transaction to BudgetStore with the ability to read and write
-      const delTxn = db.transaction(["BudgetStore"], "readwrite");
+      const delTxn = db.transaction(["pending"], "readwrite");
 
       // Assign the current store to a variable
-      const currentStore = delTxn.objectStore("BudgetStore");
+      const currentStore = delTxn.objectStore("pending");
 
       // Clear existing entries because our bulk add was successful
       currentStore.clear();
